@@ -57,6 +57,7 @@ try
     Globals.uiWindowsCP = GetACP();
 
     Globals.pFontDefaultList = new RenderFontDefaults();
+    Globals.api = new ApiRoutines();
 
     FontInfoBase::s_SetFontDefaultList(Globals.pFontDefaultList);
 
@@ -883,7 +884,7 @@ DWORD WINAPI ConsoleIoThread(LPVOID lpParameter)
     auto& globals = ServiceLocator::LocateGlobals();
 
     CONSOLE_API_MSG ReceiveMsg;
-    ReceiveMsg._pApiRoutines = &globals.api;
+    ReceiveMsg._pApiRoutines = globals.api;
     ReceiveMsg._pDeviceComm = globals.pDeviceComm;
     PCONSOLE_API_MSG ReplyMsg = nullptr;
 
@@ -895,7 +896,7 @@ DWORD WINAPI ConsoleIoThread(LPVOID lpParameter)
         std::unique_ptr<CONSOLE_API_MSG> capturedMessage{ static_cast<PCONSOLE_API_MSG>(lpParameter) };
 
         ReceiveMsg = *capturedMessage.get();
-        ReceiveMsg._pApiRoutines = &globals.api;
+        ReceiveMsg._pApiRoutines = globals.api;
         ReceiveMsg._pDeviceComm = globals.pDeviceComm;
         IoSorter::ServiceIoOperation(&ReceiveMsg, &ReplyMsg);
     }
@@ -923,7 +924,7 @@ DWORD WINAPI ConsoleIoThread(LPVOID lpParameter)
             ReplyMsg = nullptr;
             continue;
         }
-
+        ReceiveMsg._pApiRoutines = globals.api;
         IoSorter::ServiceIoOperation(&ReceiveMsg, &ReplyMsg);
     }
 

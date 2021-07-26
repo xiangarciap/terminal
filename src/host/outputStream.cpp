@@ -110,7 +110,7 @@ ConhostInternalGetSet::ConhostInternalGetSet(_In_ IIoProvider& io) :
 // - true if successful (see DoSrvGetConsoleScreenBufferInfo). false otherwise.
 bool ConhostInternalGetSet::GetConsoleScreenBufferInfoEx(CONSOLE_SCREEN_BUFFER_INFOEX& screenBufferInfo) const
 {
-    ServiceLocator::LocateGlobals().api.GetConsoleScreenBufferInfoExImpl(_io.GetActiveOutputBuffer(), screenBufferInfo);
+    ServiceLocator::LocateGlobals().api->GetConsoleScreenBufferInfoExImpl(_io.GetActiveOutputBuffer(), screenBufferInfo);
     return true;
 }
 
@@ -122,7 +122,7 @@ bool ConhostInternalGetSet::GetConsoleScreenBufferInfoEx(CONSOLE_SCREEN_BUFFER_I
 // - true if successful (see DoSrvSetConsoleScreenBufferInfo). false otherwise.
 bool ConhostInternalGetSet::SetConsoleScreenBufferInfoEx(const CONSOLE_SCREEN_BUFFER_INFOEX& screenBufferInfo)
 {
-    return SUCCEEDED(ServiceLocator::LocateGlobals().api.SetConsoleScreenBufferInfoExImpl(_io.GetActiveOutputBuffer(), screenBufferInfo));
+    return SUCCEEDED(ServiceLocator::LocateGlobals().api->SetConsoleScreenBufferInfoExImpl(_io.GetActiveOutputBuffer(), screenBufferInfo));
 }
 
 // Routine Description:
@@ -135,7 +135,7 @@ bool ConhostInternalGetSet::SetConsoleCursorPosition(const COORD position)
 {
     auto& info = _io.GetActiveOutputBuffer();
     const auto clampedPosition = info.GetTextBuffer().ClampPositionWithinLine(position);
-    return SUCCEEDED(ServiceLocator::LocateGlobals().api.SetConsoleCursorPositionImpl(info, clampedPosition));
+    return SUCCEEDED(ServiceLocator::LocateGlobals().api->SetConsoleCursorPositionImpl(info, clampedPosition));
 }
 
 // Method Description:
@@ -233,7 +233,7 @@ bool ConhostInternalGetSet::PrivateWriteConsoleInputW(std::deque<std::unique_ptr
 // - true if successful (see DoSrvSetConsoleWindowInfo). false otherwise.
 bool ConhostInternalGetSet::SetConsoleWindowInfo(const bool absolute, const SMALL_RECT& window)
 {
-    return SUCCEEDED(ServiceLocator::LocateGlobals().api.SetConsoleWindowInfoImpl(_io.GetActiveOutputBuffer(), absolute, window));
+    return SUCCEEDED(ServiceLocator::LocateGlobals().api->SetConsoleWindowInfoImpl(_io.GetActiveOutputBuffer(), absolute, window));
 }
 
 // Routine Description:

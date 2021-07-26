@@ -13,6 +13,8 @@
 #include "input.h" // ProcessCtrlEvents
 #include "output.h" // CloseConsoleProcessState
 
+#include "VtApiRoutines.h"
+
 using namespace Microsoft::Console;
 using namespace Microsoft::Console::Render;
 using namespace Microsoft::Console::VirtualTerminal;
@@ -45,6 +47,10 @@ VtIo::VtIo() :
     if (VtMode == XTERM_256_STRING)
     {
         ioMode = VtIoMode::XTERM_256;
+    }
+    else if (VtMode == XTERM_256_STRING_PT)
+    {
+        ioMode = VtIoMode::XTERM_256_PT;
     }
     else if (VtMode == XTERM_STRING)
     {
@@ -136,8 +142,9 @@ VtIo::VtIo() :
     {
         return S_FALSE;
     }
+    auto& globals = ServiceLocator::LocateGlobals();
 
-    const CONSOLE_INFORMATION& gci = ServiceLocator::LocateGlobals().getConsoleInformation();
+    const CONSOLE_INFORMATION& gci = globals.getConsoleInformation();
 
     try
     {
@@ -153,6 +160,27 @@ VtIo::VtIo() :
                                                                 gci.GetWindowSize().Y);
             switch (_IoMode)
             {
+            case VtIoMode::XTERM_256_PT:
+            {
+                auto xtermEngine = std::make_unique<Xterm256Engine>(std::move(_hOutput),
+                                                                    initialViewport);
+
+                auto vtapi = new VtApiRoutines();
+                vtapi->m_pVtEngine = xtermEngine.get();
+                if (globals.api)
+                {
+                    vtapi->m_pUsualRoutines = globals.api;
+                }
+                else
+                {
+                    vtapi->m_pUsualRoutines = new ApiRoutines();
+                }
+
+                globals.api = vtapi;
+
+                _pVtRenderEngine = std::move(xtermEngine);
+                break;
+            }
             case VtIoMode::XTERM_256:
                 _pVtRenderEngine = std::make_unique<Xterm256Engine>(std::move(_hOutput),
                                                                     initialViewport);

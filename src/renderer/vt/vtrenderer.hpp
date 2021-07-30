@@ -103,6 +103,9 @@ namespace Microsoft::Console::Render
         void EndResizeRequest();
 
         void SetResizeQuirk(const bool resizeQuirk);
+        void SetPassthroughMode(const bool passthrough) noexcept;
+        void SetLookingForDSRCallback(std::function<void(bool)> pfnLooking) noexcept;
+        void SetTerminalCursorTextPosition(const COORD coordCursor) noexcept;
 
         [[nodiscard]] virtual HRESULT ManuallyClearScrollback() noexcept;
 
@@ -116,6 +119,8 @@ namespace Microsoft::Console::Render
         std::string _conversionBuffer;
 
         TextAttribute _lastTextAttributes;
+
+        std::function<void(bool)> _pfnSetLookingForDSR;
 
         Microsoft::Console::Types::Viewport _lastViewport;
 
@@ -151,6 +156,7 @@ namespace Microsoft::Console::Render
         bool _delayedEolWrap{ false };
 
         bool _resizeQuirk{ false };
+        bool _passthrough{ false };
         std::optional<TextColor> _newBottomLineBG{ std::nullopt };
 
         [[nodiscard]] HRESULT _WriteFill(const size_t n, const char c) noexcept;
@@ -212,6 +218,7 @@ namespace Microsoft::Console::Render
         [[nodiscard]] HRESULT _EndHyperlink() noexcept;
 
         [[nodiscard]] HRESULT _RequestCursor() noexcept;
+        [[nodiscard]] HRESULT _ListenForDSR() noexcept;
 
         [[nodiscard]] HRESULT _RequestWin32Input() noexcept;
 

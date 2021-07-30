@@ -20,6 +20,8 @@ namespace Microsoft::Terminal::Core
         virtual bool PrintString(std::wstring_view string) noexcept = 0;
         virtual bool ExecuteChar(wchar_t wch) noexcept = 0;
 
+        virtual bool ReturnResponse(std::wstring_view responseString) noexcept = 0;
+
         virtual TextAttribute GetTextAttributes() const noexcept = 0;
         virtual void SetTextAttributes(const TextAttribute& attrs) noexcept = 0;
 

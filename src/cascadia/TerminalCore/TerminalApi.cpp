@@ -26,6 +26,18 @@ try
 }
 CATCH_LOG_RETURN_FALSE()
 
+bool Terminal::ReturnResponse(std::wstring_view responseString) noexcept
+try
+{
+    if (!_pfnWriteInput)
+    {
+        return false;
+    }
+    _pfnWriteInput(responseString);
+    return true;
+}
+CATCH_LOG_RETURN_FALSE()
+
 TextAttribute Terminal::GetTextAttributes() const noexcept
 {
     return _buffer->GetCurrentAttributes();
